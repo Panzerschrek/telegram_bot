@@ -3,7 +3,6 @@ use teloxide::prelude::*;
 
 fn main()
 {
-	println!("Enter main");
 	let opt = Opt::from_args();
 
 	tokio::runtime::Builder::new_current_thread()
@@ -23,13 +22,39 @@ struct Opt
 
 async fn async_main(token: &str)
 {
-	println!("Enter async main");
+	println!("Creating the bot...");
 
 	let bot = Bot::new(token);
 
+	println!("The bot is created...");
+
 	teloxide::repl(bot, |bot: Bot, msg: Message| async move {
-		println!("Got message {:?}", msg);
-		bot.send_dice(msg.chat.id).await?;
+		let (kind, chat) = (msg.kind, msg.chat);
+		match kind
+		{
+			teloxide::types::MessageKind::Common(teloxide::types::MessageCommon {
+				from,
+				media_kind: teloxide::types::MediaKind::Text(teloxide::types::MediaText { text, .. }),
+				..
+			}) =>
+			{
+				println!(
+					"\n\n\n======The Bot======\nFrom user {} got message:\n\n\n{}",
+					from.map(|u| u.id.to_string()).unwrap_or("unknown".to_string()),
+					text
+				);
+			},
+			_ =>
+			{
+				println!("\n\n\nGot unssupported message.");
+			},
+		}
+
+		bot.send_message(
+			chat.id,
+			"Уважаемая администрация рассмотрит ваше сообщение в ближайшее время.",
+		)
+		.await?;
 		Ok(())
 	})
 	.await;
