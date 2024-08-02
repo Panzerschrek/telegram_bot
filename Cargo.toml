@@ -7,6 +7,7 @@ edition = "2021"
 panic = "abort"
 lto = true
 strip = true
+opt-level = "s" # Optimize for size.
 
 [dependencies]
 structopt = "0.3"
