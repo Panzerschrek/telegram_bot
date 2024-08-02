@@ -21,3 +21,14 @@ jobs:
     # Build release
     - name: BuildRelease
       run: cargo build --release
+    # Create release
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: true
+        prerelease: true
+        release_name: ${{ steps.version.outputs.version }}
+        tag_name: ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
