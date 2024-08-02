@@ -1,0 +1,23 @@
+name: Build and publish release
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    # Clone repository and submodules
+    - name: Fetch
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    # Install Rust compiler
+    - name: Rustup
+      uses: actions-rs/toolchain@v1
+      with:
+        override: true
+        profile: default
+        toolchain: 1.73.0
+    # Build release
+    - name: BuildRelease
+      run: cargo build --release
