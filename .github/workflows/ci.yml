@@ -1,0 +1,43 @@
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    # Clone repository and submodules
+    - name: Fetch
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    # Install Rust compiler
+    - name: Rustup
+      uses: actions-rs/toolchain@v1
+      with:
+        override: true
+        profile: default
+        toolchain: 1.60.0
+    # Build debug
+    - name: BuildDebug
+      run: cargo build
+    # Build release
+    - name: BuildRelease
+      run: cargo build --release
+    # Check formatting in parallel, using nightly toolchain.
+  check_fmt:
+      runs-on: ubuntu-20.04
+      steps:
+      - name: Fetch
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Rustup
+        uses: actions-rs/toolchain@v1
+        with:
+          override: true
+          profile: default
+          toolchain: nightly
+      - name: Check rustfmt
+        run: cargo fmt -- --check
